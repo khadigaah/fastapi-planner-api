@@ -41,3 +41,4 @@ async def delete_event(id: int) -> dict:
 async def delete_all_events() -> dict:
     events.clear()
     return {"message": "All events deleted successfully"}
+
