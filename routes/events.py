@@ -2,7 +2,7 @@ from typing import List
 
 from database.connection import get_session
 from fastapi import APIRouter, Depends, HTTPException, status
-from models.events import Event
+from models.events import Event, EventUpdate
 from sqlmodel import select
 
 event_router = APIRouter(tags=["events"])
@@ -31,6 +31,22 @@ async def create_event(new_event: Event, session = Depends (get_session)) -> dic
     session.commit()
     session.refresh(new_event)
     return {"message": "Event created successfully", "event_id": new_event.id}
+
+@event_router.put("/edit/{id}", response_model=Event)
+async def update_event(id:int, new_data:EventUpdate, session = Depends(get_session)) -> Event:
+    event = session.get(Event, id)
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found"
+        )
+    event_data = new_data.dict(exclude_unset=True)
+    for key, value in event_data.items():
+        setattr(event, key, value)
+    session.add(event)
+    session.commit()
+    session.refresh(event)
+    return event
 
 
 @event_router.delete("/{id}")
