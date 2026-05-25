@@ -1,4 +1,4 @@
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy import Session, SQLModel, create_engine
 
 database_file = "planner.db"
 database_connection_string = f"sqlite:///{database_file}"
