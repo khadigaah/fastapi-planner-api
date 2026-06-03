@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from beanie import Document
 from pydantic import BaseModel
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, Session, SQLModel, create_engine
@@ -93,3 +94,24 @@ class Event(SQLModel, table=True):
                 "location": "Conference Room A"
             }
         }
+
+class Event (Document):
+    title: str
+    image: str
+    description: str
+    location: str
+    tags: List[str]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "Team Meeting",
+                "image": "https://example.com/event-image.jpg",
+                "description": "Monthly team meeting to discuss project updates.",
+                "tags": ["meeting", "team", "project"],
+                "location": "Conference Room A"
+            }
+        }
+
+        class Settings:
+            name = "events"
