@@ -1,31 +1,35 @@
+from database.connection import Database
 from fastapi import APIRouter, HTTPException, status
-from models.users import UserSignIn, UserSignup
+from models.users import User, UserSignIn, UserSignup
 
 user_router = APIRouter(tags=["users"])
 
-# Simulated database
-users = {}
+user_database = Database(User)
+
 
 @user_router.post("/signup")
-async def sign_new_user(data: UserSignup) -> dict:
-    if data.email in users:
+async def sign_new_user(user: UserSignup) -> dict:
+    user_exists = await user_database.find_one(User.email == user.email)
+    if user_exists:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with this email already exists"
         )
-    users[data.email] = data
-    return {"message": "User created successfully"}
+    await user_database.save(user)
+    return {"message": "User signed up successfully"}
 
 @user_router.post("/signin")
 async def sign_user_in(user: UserSignIn) -> dict:
-    if user.email not in users:
+    user_exists = await user_database.find_one(User.email == user.email)
+    if not user_exists:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    if users[user.email].password != user.password:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect password"
-        )
-    return {"message": "User signed in successfully"}
+
+    if user_exists.password == user.password:
+        return {"message": "User signed in successfully"}
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid credentials"
+    )
