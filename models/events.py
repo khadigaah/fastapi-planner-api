@@ -2,116 +2,45 @@ from typing import List, Optional
 
 from beanie import Document
 from pydantic import BaseModel
-from sqlalchemy import JSON, Column
-from sqlmodel import Field, Session, SQLModel, create_engine
 
-# create a SQLite engine (adjust URL as needed)
-engine = create_engine("sqlite:///./planner.db", echo=False)
 
-# ensure database tables are created
-SQLModel.metadata.create_all(engine)
-
-class EventSchema(BaseModel):
-    id: int
+class Event(Document):
+    creator: Optional[str]
     title: str
     image: str
     description: str
-    location: str
     tags: List[str]
+    location: str
 
     class Config:
-        json_schema_extra = {
+        schema_extra = {
             "example": {
-                "id": 1,
-                "title": "Team Meeting",
-                "image": "https://example.com/event-image.jpg",
-                "description": "Monthly team meeting to discuss project updates.",
-                "tags": ["meeting", "team", "project"],
-                "location": "Conference Room A"
+                "title": "FastAPI Book Launch",
+                "image": "https://linktomyimage.com/image.png",
+                "description": "We will be discussing the contents of the FastAPI book in this event.Ensure to come with your own copy to win gifts!",
+                "tags": ["python", "fastapi", "book", "launch"],
+                "location": "Google Meet"
             }
         }
 
-class Event(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    title: str
-    image: str
-    description: str
-    location: str
-    tags: List[str]
+    class Settings:
+        name = "events"
 
-new_event = Event(
-    title="Team Meeting",
-    image="https://example.com/event-image.jpg",
-    description="Monthly team meeting to discuss project updates.",
-    location="Conference Room A",
-    tags=["meeting", "team", "project"]
-)
-
-with Session(engine) as session:
-    session.add(new_event)
-    session.commit()
-    session.refresh(new_event)
-
-database_file = "planner.db"
-engine = create_engine(database_file, echo=True)
-SQLModel.metadata.create_all(engine)
 
 class EventUpdate(BaseModel):
-    title: Optional[str] = None
-    image: Optional[str] = None
-    description: Optional[str] = None
-    location: Optional[str] = None
-    tags: Optional[List[str]] = None
+    title: Optional[str]
+    image: Optional[str]
+    description: Optional[str]
+    tags: Optional[List[str]]
+    location: Optional[str]
 
     class Config:
-        json_schema_extra = {
+        schema_extra = {
             "example": {
-                "title": "Updated Team Meeting",
-                "image": "https://example.com/updated-event-image.jpg",
-                "description": "Updated description for the team meeting.",
-                "location": "Conference Room B",
-                "tags": ["updated", "meeting", "team", "project"]
+                "title": "FastAPI BookLaunch",
+                "image": "https://linktomyimage.com/image.png",
+                "description": "We will be discussing the contents of the FastAPI book in this event.Ensure to come with your own copy to win gifts!",
+                "tags": ["python", "fastapi", "book", "launch"],
+                "location": "Google Meet"
             }
         }
-
-class Event(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    title: str
-    image: str
-    description: str
-    location: str
-    tags: List[str] = Field(sa_column= Column(JSON))
-
-    class Config:
-        arbitrary_types_allowed = True
-        json_schema_extra = {
-            "example": {
-                "id": 1,
-                "title": "Team Meeting",
-                "image": "https://example.com/event-image.jpg",
-                "description": "Monthly team meeting to discuss project updates.",
-                "tags": ["meeting", "team", "project"],
-                "location": "Conference Room A"
-            }
-        }
-
-class Event (Document):
-    title: str
-    image: str
-    description: str
-    location: str
-    tags: List[str]
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "title": "Team Meeting",
-                "image": "https://example.com/event-image.jpg",
-                "description": "Monthly team meeting to discuss project updates.",
-                "tags": ["meeting", "team", "project"],
-                "location": "Conference Room A"
-            }
-        }
-
-        class Settings:
-            name = "events"
