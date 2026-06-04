@@ -1,10 +1,10 @@
-# 📅 Event Planner API
+#  Event Planner API
 
 A robust RESTful API built with **FastAPI** and **MongoDB** for managing events, users, and secure authentication. This project is designed with best practices in mind, featuring asynchronous database operations and complete containerization.
 
 ---
 
-## 🚀 Features
+## Features
 
 * **User Authentication:** Secure signup and login mechanisms using hashed passwords (bcrypt) and JSON Web Tokens (JWT).
 * **Event Management:** Full CRUD (Create, Read, Update, Delete) operations for event planning.
@@ -15,7 +15,7 @@ A robust RESTful API built with **FastAPI** and **MongoDB** for managing events,
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend Framework:** FastAPI
 * **Database:** MongoDB
